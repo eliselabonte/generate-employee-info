@@ -1,4 +1,4 @@
-function generateHTML()    {
+function HTMLtemplate()    {
     const html = 
     `<!DOCTYPE html>
     <html>
@@ -17,7 +17,7 @@ function generateHTML()    {
     
         <body id="body">
             <header>
-                <h1>${companyName}</h1>
+                <h1>${company}</h1>
                 <h2>Our Associates</h2>
             </header>
     
@@ -58,3 +58,5 @@ function generateHTML()    {
         </body>
     </html>`
 }
+
+module.exports = HTMLtemplate();

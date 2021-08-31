@@ -1,167 +1,221 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 
-// these hoes are crazy if they think I'm about to write tests for this shit
+// import employee classes
+const Manager = require('./lib/manager')
+const Engineer = require('./lib/engineer')
+const Intern = require('./lib/intern')
+const Company = require('./lib/company')
 
-const html = require('./src/HTMLtemplate');
+// html template import
+// const htmlTemplate = require('./src/HTMLtemplate');
 
+
+// default employee type is Engineer
+let job = 'Engineer';
+
+// create empty list of employees
+let employeeList = [];
+
+// ask for company name once
+// putting this on the back-burner for now
 const companyName = {
     type: 'input',
-    name: 'companyName',
+    name: 'company',
     message: 'What is the name of your company?',
-    }
-const newEmployee = [
-    // repeat this question until 'no more new employees' is selected.
-    {
-    type: 'confirm',
-    name: 'confirmNew',
-    message: 'Would you like to add an employee? (hit ENTER for yes)',
-    default: true,
-    },
-    {
+};
+
+// question to be asked at the beginning and end of every new employee
+const newEmployee =
+{
     type: 'list',
-    name: 'newEmployee',
-    message: 'What type of employee?',
-    choices: ['manager', 'engineer', 'intern'],
-    default: 'engineer',
-    },
-]
-    
-const employeePrompts = [
-    // MANAGER
-    {
-    type: 'input',
-    name: 'managerName',
-    message: 'What is the name of your manager?',
-    when: function(answers) {
-        return answers.newEmployee === 'manager';
-    }
-    },
-    {
-    type: 'input',
-    name: 'managerEmail',
-    message: 'What is the manager\'s email address?',
-    when: function(answers) {
-        return answers.newEmployee === 'manager';
-    }
-    },
-    {
-    type: 'input',
-    name: 'managerOfficeNumber',
-    message: 'What is the manager\'s office number?',
-    when: function(answers) {
-        return answers.newEmployee === 'manager';
-    }
-    },
+    name: 'confirmNew',
+    message: 'Would you like to add an employee?',
+    choices: ['Manager', 'Engineer', 'Intern', 'no more employees']
+};
 
-    // ENGINEER
+// these questions are only asked based on the type of employee added
+const jobBasedPrompts = [
     {
-    type: 'input',
-    name: 'engineerName',
-    message: 'What is the name of your Engineer?',
-    when: function(answers) {
-        return answers.newEmployee === 'engineer';
-    }
+        type: 'input',
+        name: 'office',
+        message: `What is the Manager's office number?`
     },
     {
-    type: 'input',
-    name: 'engineerEmail',
-    message: 'What is the Engineer\'s email address?',
-    when: function(answers) {
-        return answers.newEmployee === 'engineer';
-    }
+        type: 'input',
+        name: 'github',
+        message: `What is the Engineer's github?`
     },
     {
-    type: 'input',
-    name: 'engineergitHub',
-    message: 'Enter the Engineer\'s GitHub username.',
-    when: function(answers) {
-        return answers.newEmployee === 'engineer';
-    }
-    },
-
-    // INTERN
-    {
-    type: 'input',
-    name: 'internName',
-    message: 'What is the name of your Intern?',
-    when: function(answers) {
-        return answers.newEmployee === 'intern';
-    }
+        type: 'input',
+        name: 'school',
+        message: `What school does the intern attend?`
     },
     {
-    type: 'input',
-    name: 'internEmail',
-    message: 'What is the intern\'s email address?',
-    when: function(answers) {
-        return answers.newEmployee ===  'intern';
-    }
-    },
-    {
-    type: 'input',
-    name: 'internSchoolName',
-    message: 'What University does the intern attend?',
-    when: function(answers) {
-        return answers.newEmployee === 'intern';
-    }
-    },
-    {
-    type: 'input',
-    name: 'internSchoolSite',
-    message: 'Enter the University website.',
-    when: function(answers) {
-        return answers.newEmployee === 'intern';
-    }
+        type: 'input',
+        name: 'schoolWebsite',
+        message: `What is the intern's university website?`
     },
 ];
 
-function generateHTML(newEmployee, ...answers) {
-        inquirer.prompt(companyName).prompt()
-        .then((userInput) => {
-
-            //         console.log('all done, bitch', userInput)
-    
-            //     // const htmlPageContent = generateHTML(answers);
-    
-            //     // fs.writeFile('index.html', htmlPageContent, (err) =>
-            //     //     err ? console.log(err) : console.log('Successfully created index.html!')
-            //     // );
-            //     });
-        
-        // store responses in a string as they come in
-        const finalAnswers = [...inputs, answers];
-        // this determines if the prompts are over or not based on the user's answer to the repeated question
-        // (also I have to figure out how to tell it which question to repeat)
-        const endPrompts = (newEmployee === 'no more new employees')
-        console.log({endPrompts, newEmployee});
-
-        // if the prompts aren't done, keep storing answers. if the prompts are done, collect all answers
-        return endPrompts ? finalAnswers : getInputs(finalAnswers);
-        })};
-
-function ask()  {
-    // if companyName exists, then prompt the newEmployee
-    inquirer.prompt(companyName)
-    
-    if (companyName)    {
-        inquirer.prompt(newEmployee)
-        ask()
-    }
-    if (newEmployee.confirmNew)    {
-        inquirer.prompt(employeePrompts),
-        ask()
-    }
-    else (
-        generateHTML()
-    )
-
-    // repeat the below code until done
-        // if newEmployee is anything but 'no new employee' then prompt companyPrompts
-        // prompt newEmployee
+// these questions are asked for all employees
+function employeePrompts(employee) {
+    return (prompts = [
+        {
+            type: 'input',
+            name: 'id',
+            message: `What is the ${employee}'s employee ID?`
+        },
+        {
+            type: 'input',
+            name: 'name',
+            message: `What is the ${employee}'s name?`
+        },
+        {
+            type: 'input',
+            name: 'email',
+            message: `What is the ${employee}'s email address?`
+        },
+    ]);
 }
 
-ask();
+function generateHTML(newEmployee, ...answers) {
+    fs.readFile("./src/index.html", (err, data) => {
+    if (err) {
+        console.log(err);
+    } 
+    else {
+        let newTeam = teamArray.toString().replace(",", "");
+        let result = data.toString().replace("<figure></figure>", newTeam);
+        fs.writeFile("./public/index.html", result, "utf8", function (err) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Successfully Generated Team!")
+        }
+        });
+        fs.copyFile('./src/reset.css', './public/style.css', (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+        fs.copyFile('./src/style.css', './public/style.css', (err) => {
+        if (err) {
+            console.log(err);
+        }
+        });
+        }
+    })
+    
+};
 
+function generateCard(answers) {
+    console.log('generating card, line 106')
+    let employeeTitle = '';
+    let employeeClass = '';
+    let employeeSpecificTitle = '';
+    let employeeSpecific = '';
+
+    if (answers instanceof Manager)    {
+        employeeTitle = 'Manager';
+        employeeClass = 'manager';
+        employeeSpecificTitle = 'Office Number';
+        employeeSpecific = answers.office;
+    }
+    if (answers instanceof Engineer)    {
+        employeeTitle = 'Engineer';
+        employeeClass = 'engineer';
+        employeeSpecificTitle = 'GitHub';
+        employeeSpecific = `<a href="https://www.github.com/${answer.github}">${answer.github}</a>`;
+    }
+    if (answers instanceof Intern)    {
+        employeeTitle = 'Intern';
+        employeeClass = 'intern';
+        employeeSpecificTitle = 'University';
+        employeeSpecific = `<a href="${answers.schoolWebsite}">${answers.school}</a>`;
+    }
+
+    let card = 
+        `<div class="row firstRow">
+        <div class="employee ${employeeClass}">
+            <h3>${employeeTitle}</h3>
+            <h4>${answers.name}, ID: ${answers.id} </h4>
+            <p>Email:<a href="mailto:${answers.email}">${answers.email}</a>
+            </p>
+            <p>${employeeSpecificTitle}: ${employeeSpecific}</p>
+        </div>
+        </div>`;
+
+    return card;
+
+};
+
+function getTeam() {
+    let questions = [];
+    switch (job) {
+        case 'Manager':
+            managerPrompts = employeePrompts(job);
+            questions = [...managerPrompts, jobBasedPrompts[0], newEmployee]
+            inquirer.prompt(questions).then((answers) => {
+                let manager = new Manager(
+                    answers.id,
+                    answers.name,
+                    answers.email,
+                    answers.office
+                );
+                job = answers.confirmNew;
+                employeeList.push(generateCard(manager));
+                getTeam();
+            });
+            break;
+
+        case 'Engineer':
+            engineerPrompts = employeePrompts(job);
+            questions = [...engineerPrompts, jobBasedPrompts[1], newEmployee]
+            inquirer.prompt(questions).then((answers) => {
+                let engineer = new Engineer(
+                    answers.id,
+                    answers.name,
+                    answers.email,
+                    answers.github
+                );
+                console.log(answers)
+                job = answers.confirmNew;
+                employeeList.push(generateCard(engineer));
+                getTeam();
+            });
+            break;
+
+        case 'Intern':
+            internPrompts = employeePrompts(job);
+            questions = [...internPrompts, jobBasedPrompts[2], jobBasedPrompts[3], newEmployee]
+            inquirer.prompt(questions).then((answers) => {
+                let intern = new Intern(
+                    answers.id,
+                    answers.name,
+                    answers.email,
+                    answers.school,
+                    answers.schoolWebsite
+                );
+                job = answers.confirmNew;
+                employeeList.push(generateCard(intern));
+                getTeam();
+            });
+            break;
+
+        case 'no more employees':
+            inquirer.prompt(companyName).then((answers) => {
+                let company = new Company(
+                    answers.companyName
+                );
+            });
+            generateHTML();
+            break;
+    }
+}
+
+
+getTeam();
 
 // UGH.
         // .then((userInput) => {
