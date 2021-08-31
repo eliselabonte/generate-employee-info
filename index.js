@@ -13,6 +13,7 @@ const Company = require('./lib/company')
 
 // default employee type is Engineer
 let job = 'Engineer';
+let userInputCompanyName = '';
 
 // create empty list of employees
 let employeeList = [];
@@ -79,25 +80,21 @@ function employeePrompts(employee) {
     ]);
 }
 
-function generateHTML(newEmployee, ...answers) {
+function generateHTML() {
     fs.readFile("./src/index.html", (err, data) => {
     if (err) {
         console.log(err);
     } 
     else {
-        let newTeam = teamArray.toString().replace(",", "");
-        let result = data.toString().replace("<figure></figure>", newTeam);
+        console.log(userInputCompanyName)
+        let newTeam = employeeList.toString().replace(",", "");
+        let result = data.toString().replace("<figure></figure>", newTeam).replace('COMPANY',           userInputCompanyName);
         fs.writeFile("./public/index.html", result, "utf8", function (err) {
         if (err) {
             console.log(err);
         } else {
             console.log("Successfully Generated Team!")
         }
-        });
-        fs.copyFile('./src/reset.css', './public/style.css', (err) => {
-            if (err) {
-                console.log(err);
-            }
         });
         fs.copyFile('./src/style.css', './public/style.css', (err) => {
         if (err) {
@@ -110,7 +107,6 @@ function generateHTML(newEmployee, ...answers) {
 };
 
 function generateCard(answers) {
-    console.log('generating card, line 106')
     let employeeTitle = '';
     let employeeClass = '';
     let employeeSpecificTitle = '';
@@ -122,17 +118,20 @@ function generateCard(answers) {
         employeeSpecificTitle = 'Office Number';
         employeeSpecific = answers.office;
     }
-    if (answers instanceof Engineer)    {
+    else if (answers instanceof Engineer)    {
         employeeTitle = 'Engineer';
         employeeClass = 'engineer';
         employeeSpecificTitle = 'GitHub';
         employeeSpecific = `<a href="https://www.github.com/${answer.github}">${answer.github}</a>`;
     }
-    if (answers instanceof Intern)    {
+    else if (answers instanceof Intern)    {
         employeeTitle = 'Intern';
         employeeClass = 'intern';
         employeeSpecificTitle = 'University';
         employeeSpecific = `<a href="${answers.schoolWebsite}">${answers.school}</a>`;
+    }
+    else {
+        return
     }
 
     let card = 
@@ -164,7 +163,7 @@ function getTeam() {
                     answers.office
                 );
                 job = answers.confirmNew;
-                employeeList.push(generateCard(manager));
+                employeeList.push(generateCard(answers));
                 getTeam();
             });
             break;
@@ -181,7 +180,7 @@ function getTeam() {
                 );
                 console.log(answers)
                 job = answers.confirmNew;
-                employeeList.push(generateCard(engineer));
+                employeeList.push(generateCard(answers));
                 getTeam();
             });
             break;
@@ -198,17 +197,17 @@ function getTeam() {
                     answers.schoolWebsite
                 );
                 job = answers.confirmNew;
-                employeeList.push(generateCard(intern));
+                employeeList.push(generateCard(answers));
                 getTeam();
             });
             break;
 
         case 'no more employees':
-            inquirer.prompt(companyName).then((answers) => {
-                let company = new Company(
-                    answers.companyName
-                );
-            });
+            // inquirer.prompt(companyName).then((answer) => {
+            //     let company = answer.getItem(companyName);
+            //     userInputCompanyName = company;
+            //     console.log(userInputCompanyName)
+            // });
             generateHTML();
             break;
     }
