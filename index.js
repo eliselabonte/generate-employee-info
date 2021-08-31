@@ -83,10 +83,10 @@ function employeePrompts(employee) {
 // generate stuff
 
 // company name
-function companyName(answer)    {
-    let card = `<h1>${answer.company}</h1>`
-    return card;
-};
+// function companyTitle(answer)    {
+//     let card = `<h1>${answer.company}</h1>`
+//     return card;
+// };
 
 // employee type cards
 function managerCard(answers) {
@@ -96,14 +96,12 @@ function managerCard(answers) {
     let officeNumber = answers.office;
 
     let card = 
-        `<div class="row firstRow">
-        <div class="employee manager">
+        `<div class="employee manager">
             <h3>Manager</h3>
             <h4>${name}, ID: ${id} </h4>
             <p>Email:<a href="mailto:${email}">${email}</a>
             </p>
             <p>Office Number: ${officeNumber}</p>
-        </div>
         </div>`;
 
     return card;
@@ -112,18 +110,16 @@ function managerCard(answers) {
 function engineerCard(answers) {
     let name = answers.name;
     let email = answers.email;
-    let id = answers.name;
-    let gitHub = answers.gitHub;
+    let id = answers.id;
+    let gitHub = answers.github;
 
     let card = 
-        `<div class="row firstRow">
-        <div class="employee engineer">
+        `<div class="employee engineer">
             <h3>Engineer</h3>
             <h4>${name}, ID: ${id} </h4>
             <p>Email:<a href="mailto:${email}">${email}</a>
             </p>
             <p>GitHub: <a href="https://www.github.com/${gitHub}">${gitHub}</a></p>
-        </div>
         </div>`;
 
     return card;
@@ -131,20 +127,19 @@ function engineerCard(answers) {
 
 function internCard(answers) {
     let name = answers.name;
-    let id = answers.name;
+    let id = answers.id;
     let email = answers.email;
     let schoolTitle = answers.school;
     let schoolWebsite = answers.schoolWebsite;
     
     let card = 
-        `<div class="row firstRow">
+        `
         <div class="employee intern">
             <h3>Intern</h3>
             <h4>${name}, ID: ${id} </h4>
             <p>Email:<a href="mailto:${email}">${email}</a>
             </p>
             <p>University: <a href="${schoolWebsite}">${schoolTitle}</a></p>
-        </div>
         </div>`;
 
     return card;
@@ -208,7 +203,7 @@ function getTeam() {
                     answers.email,
                     answers.github
                 );
-                console.log(answers)
+                console.log(answers.github)
                 job = answers.confirmNew;
 
                 let newCard = engineerCard(answers);
