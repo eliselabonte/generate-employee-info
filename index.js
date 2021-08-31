@@ -80,15 +80,85 @@ function employeePrompts(employee) {
     ]);
 }
 
+// generate stuff
+
+// company name
+function companyName(answer)    {
+    let card = `<h1>${answer.company}</h1>`
+    return card;
+};
+
+// employee type cards
+function managerCard(answers) {
+    let name = answers.name;
+    let id = answers.id;
+    let email = answers.email;
+    let officeNumber = answers.office;
+
+    let card = 
+        `<div class="row firstRow">
+        <div class="employee manager">
+            <h3>Manager</h3>
+            <h4>${name}, ID: ${id} </h4>
+            <p>Email:<a href="mailto:${email}">${email}</a>
+            </p>
+            <p>Office Number: ${officeNumber}</p>
+        </div>
+        </div>`;
+
+    return card;
+}
+
+function engineerCard(answers) {
+    let name = answers.name;
+    let email = answers.email;
+    let id = answers.name;
+    let gitHub = answers.gitHub;
+
+    let card = 
+        `<div class="row firstRow">
+        <div class="employee engineer">
+            <h3>Engineer</h3>
+            <h4>${name}, ID: ${id} </h4>
+            <p>Email:<a href="mailto:${email}">${email}</a>
+            </p>
+            <p>GitHub: <a href="https://www.github.com/${gitHub}">${gitHub}</a></p>
+        </div>
+        </div>`;
+
+    return card;
+}
+
+function internCard(answers) {
+    let name = answers.name;
+    let id = answers.name;
+    let email = answers.email;
+    let schoolTitle = answers.school;
+    let schoolWebsite = answers.schoolWebsite;
+    
+    let card = 
+        `<div class="row firstRow">
+        <div class="employee intern">
+            <h3>Intern</h3>
+            <h4>${name}, ID: ${id} </h4>
+            <p>Email:<a href="mailto:${email}">${email}</a>
+            </p>
+            <p>University: <a href="${schoolWebsite}">${schoolTitle}</a></p>
+        </div>
+        </div>`;
+
+    return card;
+}
+
+// make the HTML
 function generateHTML() {
     fs.readFile("./src/index.html", (err, data) => {
     if (err) {
         console.log(err);
     } 
     else {
-        console.log(userInputCompanyName)
         let newTeam = employeeList.toString().replace(",", "");
-        let result = data.toString().replace("<figure></figure>", newTeam).replace('COMPANY',           userInputCompanyName);
+        let result = data.toString().replace("<figure></figure>", newTeam);
         fs.writeFile("./public/index.html", result, "utf8", function (err) {
         if (err) {
             console.log(err);
@@ -106,49 +176,7 @@ function generateHTML() {
     
 };
 
-function generateCard(answers) {
-    let employeeTitle = '';
-    let employeeClass = '';
-    let employeeSpecificTitle = '';
-    let employeeSpecific = '';
-
-    if (answers instanceof Manager)    {
-        employeeTitle = 'Manager';
-        employeeClass = 'manager';
-        employeeSpecificTitle = 'Office Number';
-        employeeSpecific = answers.office;
-    }
-    else if (answers instanceof Engineer)    {
-        employeeTitle = 'Engineer';
-        employeeClass = 'engineer';
-        employeeSpecificTitle = 'GitHub';
-        employeeSpecific = `<a href="https://www.github.com/${answer.github}">${answer.github}</a>`;
-    }
-    else if (answers instanceof Intern)    {
-        employeeTitle = 'Intern';
-        employeeClass = 'intern';
-        employeeSpecificTitle = 'University';
-        employeeSpecific = `<a href="${answers.schoolWebsite}">${answers.school}</a>`;
-    }
-    else {
-        return
-    }
-
-    let card = 
-        `<div class="row firstRow">
-        <div class="employee ${employeeClass}">
-            <h3>${employeeTitle}</h3>
-            <h4>${answers.name}, ID: ${answers.id} </h4>
-            <p>Email:<a href="mailto:${answers.email}">${answers.email}</a>
-            </p>
-            <p>${employeeSpecificTitle}: ${employeeSpecific}</p>
-        </div>
-        </div>`;
-
-    return card;
-
-};
-
+// cycle through questions for each type of employee until user selects 'no more employees'
 function getTeam() {
     let questions = [];
     switch (job) {
@@ -163,7 +191,9 @@ function getTeam() {
                     answers.office
                 );
                 job = answers.confirmNew;
-                employeeList.push(generateCard(answers));
+
+                let newCard = managerCard(answers);
+                employeeList.push(newCard);
                 getTeam();
             });
             break;
@@ -180,7 +210,9 @@ function getTeam() {
                 );
                 console.log(answers)
                 job = answers.confirmNew;
-                employeeList.push(generateCard(answers));
+
+                let newCard = engineerCard(answers);
+                employeeList.push(newCard);
                 getTeam();
             });
             break;
@@ -197,12 +229,15 @@ function getTeam() {
                     answers.schoolWebsite
                 );
                 job = answers.confirmNew;
-                employeeList.push(generateCard(answers));
+
+                let newCard = internCard(answers);
+                employeeList.push(newCard);
                 getTeam();
             });
             break;
 
         case 'no more employees':
+            // wanted to add code to prompt for company name
             // inquirer.prompt(companyName).then((answer) => {
             //     let company = answer.getItem(companyName);
             //     userInputCompanyName = company;
