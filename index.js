@@ -7,10 +7,6 @@ const Engineer = require('./lib/engineer')
 const Intern = require('./lib/intern')
 const Company = require('./lib/company')
 
-// html template import
-// const htmlTemplate = require('./src/HTMLtemplate');
-
-
 // default employee type is Engineer
 let job = 'Engineer';
 let userInputCompanyName = '';
